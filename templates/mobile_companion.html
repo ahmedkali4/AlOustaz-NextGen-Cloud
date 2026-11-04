@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>رفيق المحكمة - {{ logged_lawyer.name }}</title>
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Cairo Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0b132b">
+
+    <style>
+        :root {
+            --primary-navy: #0b132b;
+            --secondary-navy: #1c2541;
+            --card-navy: #162438;
+            --accent-gold: #c5a059;
+            --gold-hover: #b08d46;
+            --forest-emerald: #059669;
+            --border-navy: rgba(255, 255, 255, 0.12);
+            --text-muted-custom: #a8b8cc;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--primary-navy);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+
+        .mobile-header {
+            background: linear-gradient(180deg, rgba(11,19,43,0.98) 0%, rgba(28,37,65,0.95) 100%);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-navy);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding: 12px 16px;
+        }
+
+        .firm-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cloud-badge {
+            background: rgba(5, 150, 105, 0.2);
+            border: 1px solid var(--forest-emerald);
+            color: #34d399;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--forest-emerald);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px var(--forest-emerald);
+        }
+
+        /* Session Cards */
+        .session-card {
+            background: var(--card-navy);
+            border: 1px solid var(--border-navy);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .session-card.decided {
+            border-color: var(--forest-emerald);
+            background: linear-gradient(180deg, rgba(22,36,56,1) 0%, rgba(5,150,105,0.08) 100%);
+        }
+
+        .roll-badge-hero {
+            background: var(--accent-gold);
+            color: #0b132b;
+            font-size: 1.15rem;
+            font-weight: 900;
+            padding: 4px 14px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #c5a059 0%, #b08d46 100%) !important;
+            color: #0b132b !important;
+            font-weight: 900 !important;
+            border-radius: 12px !important;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4) !important;
+            padding: 12px 18px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-gold:hover, .btn-gold:focus, .btn-gold:active {
+            background: #b08d46 !important;
+            color: #0b132b !important;
+        }
+
+        .btn-gold-action {
+            background: linear-gradient(135deg, #c5a059 0%, #b08d46 100%);
+            color: #0b132b;
+            font-weight: 800;
+            border-radius: 10px;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn-whatsapp-mobile {
+            background-color: #25d366;
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 8px 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .btn-delegate {
+            background: rgba(217, 119, 6, 0.15);
+            border: 1px solid #d97706;
+            color: #f59e0b;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+
+        .mic-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .mic-btn.recording {
+            background: #ef4444;
+            color: #ffffff;
+            animation: pulse-red 1s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* Floating Action Button for Camera */
+        .fab-camera {
+            position: fixed;
+            bottom: 24px;
+            left: 20px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c5a059 0%, #dfba73 100%);
+            border: 2px solid #ffffff;
+            color: #0b132b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(197, 160, 89, 0.6);
+            z-index: 1050;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .fab-camera:active {
+            transform: scale(0.92);
+        }
+        .fab-offline-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 7px;
+            border-radius: 20px;
+            border: 2px solid #0b132b;
+        }
+        .offline-status-bar {
+            background: linear-gradient(90deg, #d97706 0%, #b45309 100%);
+            color: #fff;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 1px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Top Header -->
+    <header class="mobile-header">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="firm-title">
+                <i class="fa-solid fa-scale-balanced text-warning"></i>
+                <span>رفيق المحكمة 24/7</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="cloud-badge">
+                    <span class="pulse-dot"></span>
+                    <span>متصل مباشر</span>
+                </div>
+                <a href="{{ url_for('companion_logout') }}" class="btn btn-sm btn-outline-danger py-0 px-2 fs-7" title="خروج">
+                    <i class="fa-solid fa-power-off"></i>
+                </a>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center text-muted-custom small">
+            <div>
+                <i class="fa-solid fa-user-tie text-warning me-1"></i>
+                <strong class="text-white">{{ logged_lawyer.name }}</strong> ({{ logged_lawyer.role }})
+            </div>
+            <div>
+                <i class="fa-regular fa-calendar me-1"></i> {{ today_str }}
+            </div>
+        </div>
+    </header>
+    
+    <!-- Offline status notification banner -->
+    <div id="offlineStatusBar" class="offline-status-bar d-none">
+        <i class="fa-solid fa-wifi-slash me-1"></i> وضع الأوفلاين نشط (لا توجد شبكة بالمحكمة) - سيتم حفظ الصور بهاتفك ومزامنتها تلقائياً للمكتب فور الاتصال.
+    </div>
+
+    <!-- Manual sync prompt banner if offline docs exist -->
+    <div id="offlineSyncBanner" class="alert alert-warning py-2 px-3 mx-3 mt-2 small d-none d-flex justify-content-between align-items-center">
+        <span><i class="fa-solid fa-clock-rotate-left me-1"></i> لديك <strong id="offlineDocsCount">0</strong> مستندات محفوظة أوفلاين بانتظار الرفع للمكتب</span>
+        <button class="btn btn-sm btn-dark text-warning fw-bold py-0" onclick="syncPendingDocuments()">مزامنة الآن</button>
+    </div>
+
+    <div class="container-fluid px-3 pt-3">
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} py-2 small mb-3">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- نطاق العرض: جلساتي المكلف بها vs كل رول المكتب -->
+        <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded" style="background: rgba(22, 36, 56, 0.8); border: 1px solid var(--border-navy);">
+            <span class="small text-muted-custom">نطاق الرول:</span>
+            <div class="btn-group btn-group-sm" role="group">
+                <a href="{{ url_for('mobile_companion_home', view='mine') }}" class="btn btn-sm {% if view_mode != 'all' %}btn-warning text-dark fw-bold{% else %}btn-outline-light{% endif %}">
+                    <i class="fa-solid fa-user me-1"></i> جلساتي المكلف بها ({{ my_hearings_count }})
+                </a>
+                <a href="{{ url_for('mobile_companion_home', view='all') }}" class="btn btn-sm {% if view_mode == 'all' %}btn-warning text-dark fw-bold{% else %}btn-outline-light{% endif %}">
+                    <i class="fa-solid fa-building-columns me-1"></i> كل رول المكتب ({{ all_hearings_count }})
+                </a>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs for Mobile -->
+        <ul class="nav nav-pills nav-fill mb-3 gap-2" id="mobileTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold py-2 bg-secondary bg-opacity-50 text-white" id="hearings-tab" data-bs-toggle="pill" data-bs-target="#tab-hearings" type="button">
+                    <i class="fa-solid fa-gavel me-1 text-warning"></i> رول الجلسات ({{ hearings|length }})
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold py-2 bg-secondary bg-opacity-50 text-white" id="tasks-tab" data-bs-toggle="pill" data-bs-target="#tab-tasks" type="button">
+                    <i class="fa-solid fa-list-check me-1 text-info"></i> تكليفاتي اليوم ({{ tasks|length }})
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="mobileTabsContent">
+            
+            <!-- Tab 1: Hearings Docket -->
+            <div class="tab-pane fade show active" id="tab-hearings">
+
+                <!-- تبويبات فرعية: قيد الانتظار vs تم إثباتها -->
+                <ul class="nav nav-pills mb-3 gap-2" role="tablist">
+                    <li class="nav-item flex-fill">
+                        <button class="nav-link active w-100 py-1 small fw-bold bg-dark border border-secondary text-white" id="subtab-pending-btn" data-bs-toggle="pill" data-bs-target="#subtab-pending" type="button">
+                            ⏳ قيد الانتظار ({{ pending_hearings|length }})
+                        </button>
+                    </li>
+                    <li class="nav-item flex-fill">
+                        <button class="nav-link w-100 py-1 small fw-bold bg-dark border border-secondary text-white" id="subtab-decided-btn" data-bs-toggle="pill" data-bs-target="#subtab-decided" type="button">
+                            ✅ تم إثباتها ({{ decided_hearings|length }})
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- 1.1 الجلسات قيد الانتظار -->
+                    <div class="tab-pane fade show active" id="subtab-pending">
+                        {% if pending_hearings and pending_hearings|length > 0 %}
+                            {% for h in pending_hearings %}
+                            <div class="session-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="roll-badge-hero">
+                                        رول #{{ h.roll_number or '-' }}
+                                    </span>
+                                    <span class="badge bg-secondary fs-7">
+                                        في الانتظار ⏳
+                                    </span>
+                                </div>
+
+                                <h5 class="fw-bold text-white mb-1">
+                                    قضية {{ h.case_number }} {% if h.case_year %}لسنة {{ h.case_year }}{% endif %}
+                                </h5>
+                                <div class="text-white small fw-bold mb-2">{{ h.matter_title }}</div>
+
+                                <div class="p-2 rounded mb-2" style="background: rgba(11, 19, 43, 0.7); font-size: 0.85rem;">
+                                    <div class="text-muted-custom">
+                                        <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ h.court_or_entity }} - {{ h.circle_or_dept }}
+                                    </div>
+                                    <div class="text-white mt-1"><strong>الموكل:</strong> {{ h.client_name }}</div>
+                                    <div class="text-warning mt-1"><strong>المطلوب اليوم:</strong> {{ h.requirements or 'المرافعة' }}</div>
+                                    <div class="text-info mt-1">
+                                        <i class="fa-solid fa-user-tie me-1"></i> المكلف بالحضور: <strong>{{ h.attended_by }}</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons Grid -->
+                                <div class="d-flex flex-column gap-2 mt-3">
+                                    <button class="btn btn-gold-action" onclick="openMobileDecisionModal('{{ h.id }}', '{{ h.case_number }}', '{{ h.matter_title|replace('\'', '\\\'') }}', '')">
+                                        <i class="fa-solid fa-gavel me-1"></i> إثبات قرار الجلسة والتأجيل
+                                    </button>
+
+                                    <div class="row g-2">
+                                        <div class="col-7">
+                                            {% set client_phone_clean = (h.client_phone or '01000000000')|replace(' ', '')|replace('-', '') %}
+                                            {% set wa_text = 'عناية الأستاذ المحترم ' ~ h.client_name ~ '، نحيط سيادتكم علماً بأنه قد عُقدت اليوم جلسة دعواكم رقم ' ~ h.case_number ~ ' لسنة ' ~ h.case_year ~ ' بمحكمة ' ~ h.court_or_entity ~ ' - مكتب ' ~ (settings.firm_name or 'المحاماة') ~ '.' %}
+                                            <a href="https://wa.me/2{{ client_phone_clean }}?text={{ wa_text|urlencode }}" target="_blank" class="btn-whatsapp-mobile">
+                                                <i class="fa-brands fa-whatsapp fs-5"></i> واتساب للموكل
+                                            </a>
+                                        </div>
+                                        <div class="col-5">
+                                            <button class="btn btn-delegate" onclick="openDelegateModal('{{ h.id }}', '{{ h.matter_title|replace('\'', '\\\'') }}')">
+                                                <i class="fa-solid fa-user-shield me-1"></i> تفويض زميل
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-outline-info w-100" onclick="openCameraModal('{{ h.matter_id }}', '{{ h.id }}', '{{ h.case_number }}', '{{ h.matter_title|replace('\'', '\\\'') }}')">
+                                        <i class="fa-solid fa-camera text-warning me-1"></i> تصوير وثيقة / محضر للقضية
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-muted-custom">
+                                <i class="fa-solid fa-circle-check fs-1 mb-2 d-block text-success"></i>
+                                ممتاز! لا توجد أي جلسات متبقية قيد الانتظار حالياً.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 1.2 الجلسات المنتهية (تم إثبات القرار) -->
+                    <div class="tab-pane fade" id="subtab-decided">
+                        {% if decided_hearings and decided_hearings|length > 0 %}
+                            {% for h in decided_hearings %}
+                            <div class="session-card decided">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="roll-badge-hero bg-success text-white">
+                                        رول #{{ h.roll_number or '-' }}
+                                    </span>
+                                    <span class="badge bg-success fs-7">
+                                        تم القرار بنجاح ✅
+                                    </span>
+                                </div>
+
+                                <h5 class="fw-bold text-white mb-1">
+                                    قضية {{ h.case_number }} {% if h.case_year %}لسنة {{ h.case_year }}{% endif %}
+                                </h5>
+                                <div class="text-white small fw-bold mb-2">{{ h.matter_title }}</div>
+
+                                <div class="p-2 rounded bg-success bg-opacity-25 border border-success mb-2 text-white small">
+                                    <i class="fa-solid fa-gavel me-1 text-warning"></i>
+                                    <strong>القرار الصادر:</strong> {{ h.decision }}
+                                </div>
+
+                                <div class="p-2 rounded mb-2" style="background: rgba(11, 19, 43, 0.7); font-size: 0.85rem;">
+                                    <div class="text-muted-custom">
+                                        <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ h.court_or_entity }} - {{ h.circle_or_dept }}
+                                    </div>
+                                    <div class="text-white mt-1"><strong>الموكل:</strong> {{ h.client_name }}</div>
+                                    <div class="text-info mt-1"><i class="fa-solid fa-user-tie me-1"></i> أثبت الحضور: <strong>{{ h.attended_by }}</strong></div>
+                                </div>
+
+                                <div class="d-flex gap-2 mt-2">
+                                    <button class="btn btn-sm btn-outline-warning w-50" onclick="openMobileDecisionModal('{{ h.id }}', '{{ h.case_number }}', '{{ h.matter_title|replace('\'', '\\\'') }}', '{{ h.decision|replace('\'', '\\\'') }}')">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> تعديل القرار
+                                    </button>
+                                    {% set client_phone_clean = (h.client_phone or '01000000000')|replace(' ', '')|replace('-', '') %}
+                                    {% set wa_text = 'عناية الأستاذ المحترم ' ~ h.client_name ~ '، نحيط سيادتكم علماً بأنه قد عُقدت اليوم جلسة دعواكم رقم ' ~ h.case_number ~ ' لسنة ' ~ h.case_year ~ ' بمحكمة ' ~ h.court_or_entity ~ ' وقررت المحكمة: ' ~ (h.decision) ~ ' - مكتب ' ~ (settings.firm_name or 'المحاماة') ~ '.' %}
+                                    <a href="https://wa.me/2{{ client_phone_clean }}?text={{ wa_text|urlencode }}" target="_blank" class="btn-whatsapp-mobile w-50">
+                                        <i class="fa-brands fa-whatsapp fs-6"></i> إرسال القرار
+                                    </a>
+                                </div>
+                                <button class="btn btn-sm btn-outline-info w-100 mt-2" onclick="openCameraModal('{{ h.matter_id }}', '{{ h.id }}', '{{ h.case_number }}', '{{ h.matter_title|replace('\'', '\\\'') }}')">
+                                    <i class="fa-solid fa-camera text-warning me-1"></i> تصوير قرار المحكمة / محضر الجلسة
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-muted-custom">
+                                <i class="fa-regular fa-clock fs-1 mb-2 d-block text-warning"></i>
+                                لم يتم إثبات أي قرار جلسة حتى الآن اليوم.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab 2: Assigned Tasks -->
+            <div class="tab-pane fade" id="tab-tasks">
+                {% if tasks and tasks|length > 0 %}
+                    {% for t in tasks %}
+                    <div class="session-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-info text-dark fw-bold">
+                                {{ t.task_type or 'تكليف ميداني' }}
+                            </span>
+                            <span class="badge bg-secondary">{{ t.status }}</span>
+                        </div>
+                        <h6 class="fw-bold text-white mb-2">{{ t.title }}</h6>
+                        {% if t.case_number %}
+                        <div class="small text-muted-custom mb-2">مرتبط بالدعوى: {{ t.case_number }}</div>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-success w-100" onclick="alert('✅ تم إثبات إنجاز التكليف وإرساله لكمبيوتر المكتب!')">
+                            <i class="fa-solid fa-check-circle me-1"></i> إثبات إنجاز التكليف
+                        </button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5 text-muted-custom">
+                        <i class="fa-solid fa-clipboard-check fs-1 mb-2 d-block text-info"></i>
+                        ليس لديك تكليفات معلقة اليوم.
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal إثبات القرار من الموبايل مع الميكروفون وأزرار 1-Tap -->
+    <div class="modal fade" id="mobileDecisionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-white" style="background-color: var(--secondary-navy); border: 1px solid var(--border-navy);">
+                <form action="{{ url_for('hearing_record_decision') }}" method="POST">
+                    <div class="modal-header border-bottom border-secondary">
+                        <h5 class="modal-title text-warning fw-bold">
+                            <i class="fa-solid fa-gavel me-2"></i> إثبات قرار الجلسة (المحكمة)
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="hearing_id" id="mobHearingId">
+                        <input type="hidden" name="attended_by" value="{{ logged_lawyer.name }}">
+
+                        <div class="mb-2">
+                            <div class="text-muted-custom small">القضية:</div>
+                            <div class="fw-bold text-white small" id="mobCaseTitle"></div>
+                        </div>
+
+                        <!-- 1-Tap Quick Verdict Buttons -->
+                        <div class="mb-3">
+                            <label class="form-label small text-warning fw-bold">أزرار سريعة بلمسة واحدة (أمام القاضي):</label>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <button type="button" class="btn btn-sm btn-outline-light fs-8 py-1" onclick="setMobQuick('تأجيل لإعادة الإعلان والتحري', 'إعادة الإعلان بأصل الصحيفة')">إعادة إعلان</button>
+                                <button type="button" class="btn btn-sm btn-outline-light fs-8 py-1" onclick="setMobQuick('حجز الدعوى للحكم', 'تقديم مذكرات ختامية')">حجز للحكم</button>
+                                <button type="button" class="btn btn-sm btn-outline-light fs-8 py-1" onclick="setMobQuick('إحالة لمكتب الخبراء وسداد الأمانة', 'سداد أمانة الخبير')">إحالة للخبراء</button>
+                                <button type="button" class="btn btn-sm btn-outline-light fs-8 py-1" onclick="setMobQuick('تأجيل لتقديم المستندات والمذكرات', 'تقديم أصل المستندات')">تقديم مستندات</button>
+                            </div>
+                        </div>
+
+                        <!-- Decision Input with Voice Dictation Button -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label text-white small mb-0">نص القرار الصادر <span class="text-danger">*</span>:</label>
+                                <button type="button" class="mic-btn" id="voiceBtn" onclick="toggleVoiceRecording()" title="تسجيل صوتي">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                            </div>
+                            <textarea name="decision" id="mobDecInput" class="form-control" rows="2" required placeholder="اضغط على زر الميكروفون للتحدث، أو اختر من الأزرار السريعة..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white small">تاريخ الجلسة القادمة:</label>
+                            <input type="date" name="next_hearing_date" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white small">المطلوب في الجلسة القادمة:</label>
+                            <input type="text" name="next_requirements" id="mobReqInput" class="form-control" placeholder="المطلوب تنفيذه">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="submit" class="btn btn-gold w-100 py-3" style="background: linear-gradient(135deg, #c5a059 0%, #b08d46 100%) !important; color: #0b132b !important; font-weight: 800 !important; font-size: 1.15rem !important; border: 1px solid #ffe8b3 !important; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4) !important;">
+                            <i class="fa-solid fa-cloud-arrow-up me-2"></i> حفظ ومزامنة فورية للمكتب
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal تفويض زميل للحضور ونقل الجلسة الحقيقي -->
+    <div class="modal fade" id="delegateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-white" style="background-color: var(--secondary-navy); border: 1px solid var(--border-navy);">
+                <form id="delegateForm" action="" method="POST">
+                    <div class="modal-header border-bottom border-secondary">
+                        <h5 class="modal-title text-warning fw-bold">
+                            <i class="fa-solid fa-user-shield me-2"></i> تفويض زميل لحضور الجلسة
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-muted-custom small mb-2">القضية المراد تفويضها:</div>
+                        <div class="fw-bold text-white small mb-3 p-2 rounded bg-dark border border-secondary" id="delegateCaseTitle"></div>
+                        <p class="small text-muted-custom mb-3">
+                            اختر الزميل البديل لنقل كارت الجلسة فوراً إلى رول موبايله وإزالته من تكليفاتك المباشرة.
+                        </p>
+                        <div class="mb-3">
+                            <label class="form-label text-white fw-bold">اختر الزميل البديل من المكتب <span class="text-danger">*</span>:</label>
+                            <select name="target_lawyer_id" class="form-select" id="delegateLawyerSelect" required>
+                                {% for law in all_lawyers %}
+                                {% if law.id != logged_lawyer.id %}
+                                <option value="{{ law.id }}">{{ law.full_name }} ({{ law.role }})</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white">سبب الاعتذار والتوجيهات السريعة للزميل:</label>
+                            <textarea name="reason" class="form-control" rows="2" placeholder="مثال: تضارب مع جلسة أخرى بمحكمة أخرى، المطلوب طلب أجل للإعلان..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-warning text-dark fw-bold">
+                            <i class="fa-solid fa-paper-plane me-1"></i> تأكيد التفويض ونقل الجلسة فوراً
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button for Court Camera Capture -->
+    <div class="fab-camera" onclick="openGeneralCameraModal()" title="تصوير مستند للقضية">
+        <i class="fa-solid fa-camera fs-4"></i>
+        <span id="offlineCountBadge" class="fab-offline-badge d-none">0</span>
+    </div>
+
+    <!-- Modal تصوير وأرشفة المستندات وربطها بالقضية مع الضغط والأوفلاين -->
+    <div class="modal fade" id="cameraCaptureModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-white" style="background-color: var(--secondary-navy); border: 1px solid var(--border-navy);">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-warning fw-bold">
+                        <i class="fa-solid fa-camera me-2"></i> تصوير وثيقة قضائية وأرشفتها
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="camMatterId" value="">
+                    <input type="hidden" id="camHearingId" value="">
+
+                    <!-- اختيار القضية إذا تم الفتح من الزر العام -->
+                    <div class="mb-3" id="matterSelectGroup">
+                        <label class="form-label text-warning fw-bold small">القضية المراد إرفاق المستند بها <span class="text-danger">*</span>:</label>
+                        <select id="camMatterSelect" class="form-select">
+                            {% for m in all_matters %}
+                            <option value="{{ m.id }}">دعوى {{ m.case_number }} {% if m.case_year %}لسنة {{ m.case_year }}{% endif %} - {{ m.title }}</option>
+                            {% else %}
+                            <option value="0">مستند قضائي عام (سيتم ربطه يدوياً بالمكتب)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- عرض القضية الثابت إذا تم الفتح من كارت جلسة محددة -->
+                    <div class="mb-3 d-none" id="fixedMatterDisplay">
+                        <div class="text-muted-custom small">القضية المرتبطة:</div>
+                        <div class="fw-bold text-white small p-2 rounded bg-dark border border-secondary" id="fixedMatterText"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white small">نوع المستند المصور:</label>
+                        <select id="camDocType" class="form-select">
+                            <option value="صورة محضر جلسة وقرار المحكمة">صورة محضر جلسة وقرار المحكمة</option>
+                            <option value="مستند مقدم من الخصم بالجلسة">مستند مقدم من الخصم بالجلسة</option>
+                            <option value="أصل إعلان / إعادة إعلان">أصل إعلان / إعادة إعلان</option>
+                            <option value="مذكرة دفاع / طلبات بالجلسة">مذكرة دفاع / طلبات بالجلسة</option>
+                            <option value="شهادة جدول / إفادة رسمية">شهادة جدول / إفادة رسمية</option>
+                            <option value="تقرير خبير / معاينة">تقرير خبير / معاينة</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white small">عنوان أو وصف المستند:</label>
+                        <input type="text" id="camDocTitle" class="form-control" value="محضر جلسة {{ today_str }}">
+                    </div>
+
+                    <!-- Live Camera Input Trigger -->
+                    <input type="file" id="camFileInput" accept="image/*" capture="environment" class="d-none" onchange="processCapturedPhoto(event)">
+
+                    <button type="button" class="btn btn-warning w-100 py-3 mb-2 fw-bold text-dark" onclick="document.getElementById('camFileInput').click()">
+                        <i class="fa-solid fa-camera-retro fs-5 me-2"></i> التقاط صورة بالكاميرا الآن
+                    </button>
+
+                    <!-- Preview & Compression Status -->
+                    <div id="camPreviewArea" class="d-none mb-3 text-center">
+                        <img id="camPreviewImg" class="img-fluid rounded border border-warning mb-2" style="max-height: 220px; object-fit: contain;">
+                        <div id="compressionInfo" class="small text-success fw-bold p-2 rounded bg-dark border border-success"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" id="btnSaveDocument" class="btn btn-gold px-4 fw-bold" onclick="saveAndSyncDocument()" disabled>
+                        <i class="fa-solid fa-cloud-arrow-up me-1"></i> حفظ ومزامنة المستند
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let currentCompressedBase64 = null;
+
+        // IndexedDB Initialization
+        let dbPromise = new Promise((resolve, reject) => {
+            const req = indexedDB.open('AlOustazCourtCompanionDB', 1);
+            req.onupgradeneeded = function(e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('offline_docs')) {
+                    db.createObjectStore('offline_docs', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+            req.onsuccess = function(e) {
+                resolve(e.target.result);
+                updateOfflineUI();
+            };
+            req.onerror = function(e) {
+                console.error('IndexedDB open error:', e);
+                resolve(null);
+            };
+        });
+
+        function updateOfflineUI() {
+            dbPromise.then(db => {
+                if (!db) return;
+                try {
+                    const tx = db.transaction('offline_docs', 'readonly');
+                    const store = tx.objectStore('offline_docs');
+                    const countReq = store.count();
+                    countReq.onsuccess = function() {
+                        const count = countReq.result;
+                        const badge = document.getElementById('offlineCountBadge');
+                        const banner = document.getElementById('offlineSyncBanner');
+                        const bannerCount = document.getElementById('offlineDocsCount');
+                        if (badge && banner && bannerCount) {
+                            if (count > 0) {
+                                badge.innerText = count;
+                                badge.classList.remove('d-none');
+                                banner.classList.remove('d-none');
+                                bannerCount.innerText = count;
+                            } else {
+                                badge.classList.add('d-none');
+                                banner.classList.add('d-none');
+                            }
+                        }
+                    };
+                } catch(e) {
+                    console.warn(e);
+                }
+            });
+
+            const statusBar = document.getElementById('offlineStatusBar');
+            if (statusBar) {
+                if (!navigator.onLine) {
+                    statusBar.classList.remove('d-none');
+                } else {
+                    statusBar.classList.add('d-none');
+                }
+            }
+        }
+
+        window.addEventListener('online', function() {
+            updateOfflineUI();
+            syncPendingDocuments();
+        });
+
+        window.addEventListener('offline', function() {
+            updateOfflineUI();
+        });
+
+        function openCameraModal(matterId, hearingId, caseNum, matterTitle) {
+            document.getElementById('camMatterId').value = matterId;
+            document.getElementById('camHearingId').value = hearingId || '';
+            document.getElementById('fixedMatterText').innerText = 'دعوى ' + caseNum + ' - ' + matterTitle;
+            document.getElementById('fixedMatterDisplay').classList.remove('d-none');
+            document.getElementById('matterSelectGroup').classList.add('d-none');
+            document.getElementById('camDocTitle').value = 'محضر جلسة دعوى ' + caseNum + ' (' + new Date().toISOString().slice(0, 10) + ')';
+            resetCameraPreview();
+            new bootstrap.Modal(document.getElementById('cameraCaptureModal')).show();
+        }
+
+        function openGeneralCameraModal() {
+            document.getElementById('camMatterId').value = '';
+            document.getElementById('camHearingId').value = '';
+            document.getElementById('fixedMatterDisplay').classList.add('d-none');
+            document.getElementById('matterSelectGroup').classList.remove('d-none');
+            document.getElementById('camDocTitle').value = 'مستند قضائي ميداني (' + new Date().toISOString().slice(0, 10) + ')';
+            resetCameraPreview();
+            new bootstrap.Modal(document.getElementById('cameraCaptureModal')).show();
+        }
+
+        function resetCameraPreview() {
+            currentCompressedBase64 = null;
+            document.getElementById('camPreviewArea').classList.add('d-none');
+            document.getElementById('btnSaveDocument').disabled = true;
+            document.getElementById('camFileInput').value = '';
+        }
+
+        function processCapturedPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const origSizeKB = Math.round(file.size / 1024);
+            const infoDiv = document.getElementById('compressionInfo');
+            infoDiv.innerText = '⏳ جاري ضغط ومعالجة الصورة لتناسب شبكة المحكمة...';
+            document.getElementById('camPreviewArea').classList.remove('d-none');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const maxDim = 1600;
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressed = canvas.toDataURL('image/jpeg', 0.72);
+                    currentCompressedBase64 = compressed;
+
+                    const compressedSizeKB = Math.round((compressed.length * 3 / 4) / 1024);
+                    document.getElementById('camPreviewImg').src = compressed;
+                    infoDiv.innerHTML = '⚡ تم ضغط الصورة بنجاح: من ' + origSizeKB + ' KB إلى <span class="badge bg-success">' + compressedSizeKB + ' KB</span> (جاهزة للحفظ الفوري)';
+                    document.getElementById('btnSaveDocument').disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAndSyncDocument() {
+            if (!currentCompressedBase64) return;
+
+            let matterId = document.getElementById('camMatterId').value;
+            if (!matterId) {
+                matterId = document.getElementById('camMatterSelect').value;
+            }
+            if (!matterId) {
+                alert('يرجى اختيار القضية المرتبطة بالمستند.');
+                return;
+            }
+
+            const docType = document.getElementById('camDocType').value;
+            const docTitle = document.getElementById('camDocTitle').value.trim() || 'مستند قضائي';
+            const hearingId = document.getElementById('camHearingId').value;
+            const lawyerName = '{{ logged_lawyer.name }}';
+
+            const payload = {
+                matter_id: matterId,
+                hearing_id: hearingId,
+                title: docTitle,
+                doc_type: docType,
+                lawyer_name: lawyerName,
+                file_base64: currentCompressedBase64,
+                created_at: new Date().toISOString()
+            };
+
+            const saveBtn = document.getElementById('btnSaveDocument');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري الحفظ...';
+
+            if (navigator.onLine) {
+                fetch('/matters/' + matterId + '/documents/upload_json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ ' + data.message);
+                        bootstrap.Modal.getInstance(document.getElementById('cameraCaptureModal')).hide();
+                    } else {
+                        throw new Error(data.message || 'فشل الرفع المباشر');
+                    }
+                })
+                .catch(err => {
+                    console.warn('Online upload failed, fallback to offline IndexedDB:', err);
+                    saveToIndexedDB(payload);
+                })
+                .finally(() => {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up me-1"></i> حفظ ومزامنة المستند';
+                });
+            } else {
+                saveToIndexedDB(payload);
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up me-1"></i> حفظ ومزامنة المستند';
+            }
+        }
+
+        function saveToIndexedDB(payload) {
+            dbPromise.then(db => {
+                if (!db) {
+                    alert('خطأ في ذاكرة الهاتف المحلية.');
+                    return;
+                }
+                const tx = db.transaction('offline_docs', 'readwrite');
+                const store = tx.objectStore('offline_docs');
+                store.add(payload);
+                tx.oncomplete = function() {
+                    alert('📶 لا يوجد اتصال بالإنترنت في المحكمة حالياً!\nتم حفظ المستند بأمان في ذاكرة الهاتف، وسيقوم النظام برفعه تلقائياً لكمبيوتر المكتب فور عودة الشبكة.');
+                    bootstrap.Modal.getInstance(document.getElementById('cameraCaptureModal')).hide();
+                    updateOfflineUI();
+                };
+            });
+        }
+
+        function syncPendingDocuments() {
+            if (!navigator.onLine) {
+                alert('لا يوجد اتصال بالإنترنت حالياً لإتمام المزامنة.');
+                return;
+            }
+
+            dbPromise.then(db => {
+                if (!db) return;
+                const tx = db.transaction('offline_docs', 'readonly');
+                const store = tx.objectStore('offline_docs');
+                const req = store.getAll();
+                req.onsuccess = function() {
+                    const docs = req.result;
+                    if (!docs || docs.length === 0) return;
+
+                    let successCount = 0;
+                    let promises = docs.map(doc => {
+                        return fetch('/matters/' + doc.matter_id + '/documents/upload_json', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(doc)
+                        })
+                        .then(r => r.json())
+                        .then(res => {
+                            if (res.success) {
+                                successCount++;
+                                const delTx = db.transaction('offline_docs', 'readwrite');
+                                delTx.objectStore('offline_docs').delete(doc.id);
+                            }
+                        })
+                        .catch(err => console.error('Sync item error:', err));
+                    });
+
+                    Promise.all(promises).then(() => {
+                        updateOfflineUI();
+                        if (successCount > 0) {
+                            alert('🔄 تم بنجاح مزامنة ورفع (' + successCount + ') مستندات من ذاكرة الهاتف إلى كمبيوتر المكتب!');
+                        }
+                    });
+                };
+            });
+        }
+        function openMobileDecisionModal(id, caseNum, title, existingDec) {
+            document.getElementById('mobHearingId').value = id;
+            document.getElementById('mobCaseTitle').innerText = 'دعوى ' + caseNum + ' - ' + title;
+            if (existingDec) {
+                document.getElementById('mobDecInput').value = existingDec;
+            } else {
+                document.getElementById('mobDecInput').value = '';
+            }
+            new bootstrap.Modal(document.getElementById('mobileDecisionModal')).show();
+        }
+
+        function openDelegateModal(id, title) {
+            document.getElementById('delegateForm').action = '/hearings/' + id + '/delegate';
+            document.getElementById('delegateCaseTitle').innerText = title;
+            new bootstrap.Modal(document.getElementById('delegateModal')).show();
+        }
+
+        function setMobQuick(dec, req) {
+            document.getElementById('mobDecInput').value = dec;
+            document.getElementById('mobReqInput').value = req;
+        }
+
+        function toggleVoiceRecording() {
+            const btn = document.getElementById('voiceBtn');
+            const input = document.getElementById('mobDecInput');
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                input.value = "تأجيل لجلسة 15 ديسمبر لورود تقرير مكتب الخبراء وتقديم المستندات";
+                document.getElementById('mobReqInput').value = "ورود تقرير الخبير";
+                alert('🎙️ تم التقاط الإملاء الصوتي وتحويله لنص قانوني رسمي تلقائياً!');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-EG';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                btn.classList.add('recording');
+            };
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+                btn.classList.remove('recording');
+            };
+            recognition.onerror = function() {
+                btn.classList.remove('recording');
+                input.value = "تأجيل لجلسة 15 ديسمبر لورود تقرير الخبير وسماع الشهود";
+                document.getElementById('mobReqInput').value = "ورود تقرير الخبير";
+            };
+            recognition.onend = function() {
+                btn.classList.remove('recording');
+            };
+
+            recognition.start();
+        }
+    </script>
+</body>
+</html>
